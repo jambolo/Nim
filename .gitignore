@@ -1,0 +1,4 @@
+# Visual Studio artifacts
+out/
+.vs/
+CMakeSettings.json
