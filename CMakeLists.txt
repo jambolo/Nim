@@ -35,14 +35,23 @@ if(WIN32)
 )
 endif()
 
+find_package(CLI11 REQUIRED)
+
 set(SOURCES
     main.cpp
 )
 
 # Create the main executable
-add_executable(Nim ${SOURCES})
-target_include_directories(Nim PRIVATE .)
-target_link_libraries(Nim PRIVATE
+add_executable(nim ${SOURCES})
+target_include_directories(nim PRIVATE .)
+target_link_libraries(nim PRIVATE
+    Components
+    ComputerPlayer
+    GamePlayer
+    HumanPlayer
+    NimState
+
+    CLI11::CLI11
 #    nlohmann_json::nlohmann_json
 )
 
@@ -65,3 +74,8 @@ endif()
 # Libraries                                                             #
 #########################################################################
 
+add_subdirectory(Components)
+add_subdirectory(ComputerPlayer)
+add_subdirectory(GamePlayer)
+add_subdirectory(HumanPlayer)
+add_subdirectory(NimState)
