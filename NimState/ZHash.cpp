@@ -44,7 +44,7 @@ ZHash ZHash::changeNextPlayer()
 ZHash::ZValueTable::ZValueTable()
 {
     std::mt19937_64 rng;
-    static_assert(sizeof (std::mt19937_64::result_type) == 8, "The random number generator must generate 64 bits.");
+    static_assert(sizeof(std::mt19937_64::result_type) == 8, "The random number generator must generate 64 bits.");
     // Note: We don't seed the generator. This means that the same values are generated each time the program is run.
 
     for (int i = 0; i < Board::MAX_HEAPS; ++i)

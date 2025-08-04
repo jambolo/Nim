@@ -16,7 +16,6 @@
 class ZHash
 {
 public:
-
     // Type of a hash value
     using Z = std::uint64_t;
 
@@ -33,8 +32,7 @@ public:
     }
 
     // Constructor
-    ZHash(Board const &                   board,
-          GamePlayer::GameState::PlayerId currentPlayer);
+    ZHash(Board const & board, GamePlayer::GameState::PlayerId currentPlayer);
 
     // Returns the current value.
     Z value() const { return value_; }
@@ -42,32 +40,32 @@ public:
     // Returns true if the value is undefined (i.e. not a legal Z value)
     bool isUndefined() const { return value_ == UNDEFINED; }
 
-    // Updates the hash value when changing the number of objects in heap 'i' from 'from' to 'to'. Returns the updated ZHash object.
+    // Updates the hash value when changing the number of objects in heap 'i' from 'from' to 'to'. Returns the updated ZHash
+    // object.
     ZHash changeHeap(int i, int from, int to);
 
     // Updates the hash value when changing the next player. Returns the updated ZHash object.
     ZHash changeNextPlayer();
 
 private:
+    friend bool operator==(ZHash const & x, ZHash const & y);
+    friend bool operator<(ZHash const & x, ZHash const & y);
 
-    friend bool operator ==(ZHash const & x, ZHash const & y);
-    friend bool operator <(ZHash const & x, ZHash const & y);
+    class ZValueTable; // declared below
 
-    class ZValueTable;                     // declared below
-
-    Z value_;                              // The hash value
+    Z value_; // The hash value
 
     static ZValueTable const zValueTable_; // The hash values for each incremental state change
 };
 
 // Equality operator
-inline bool operator ==(ZHash const & x, ZHash const & y)
+inline bool operator==(ZHash const & x, ZHash const & y)
 {
     return x.value_ == y.value_;
 }
 
 // Less than operator
-inline bool operator <(ZHash const & x, ZHash const & y)
+inline bool operator<(ZHash const & x, ZHash const & y)
 {
     return x.value_ < y.value_;
 }
@@ -75,9 +73,8 @@ inline bool operator <(ZHash const & x, ZHash const & y)
 class ZHash::ZValueTable
 {
 public:
-
     ZValueTable();
 
-    Z heap_[Board::MAX_HEAPS][Board::MAX_OBJECTS + 1];  // The hash value for heap i with j objects
-    Z nextPlayer_;                                      // The hash value for the next player
+    Z heap_[Board::MAX_HEAPS][Board::MAX_OBJECTS + 1]; // The hash value for heap i with j objects
+    Z nextPlayer_;                                     // The hash value for the next player
 };

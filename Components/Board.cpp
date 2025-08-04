@@ -1,14 +1,12 @@
 #include "Board.h"
-#include "Board.h"
-#include "Board.h"
 
-#include <cassert>
-#include <vector>
 #include <algorithm>
-
+#include <cassert>
+#include <numeric>
+#include <vector>
 
 // Constructor
-Board::Board(std::vector<int> heaps)
+Board::Board(std::vector<int8_t> heaps)
     : heaps_(std::move(heaps))
 {
     assert(0 < heaps_.size() && heaps_.size() <= MAX_HEAPS); // Ensure the number of heaps does not exceed the maximum allowed
@@ -30,11 +28,20 @@ int Board::heap(int i) const
     return heaps_[i];
 }
 
+int Board::nimSum() const
+{
+    return std::reduce(heaps_.begin(), heaps_.end(), 0, [](int sum, int heap) { return sum ^ heap; });
+}
+
+int Board::count() const
+{
+    return std::count_if(heaps_.begin(), heaps_.end(), [](int n) { return n > 0; });
+}
+
 int Board::remove(int i, int n)
 {
     assert(0 <= i && i < heaps_.size()); // Ensure the index is within bounds
-    assert(0 < n && n <= heaps_[i]); // Ensure the number of objects to remove is valid
+    assert(0 < n && n <= heaps_[i]);     // Ensure the number of objects to remove is valid
     heaps_[i] -= n;
     return heaps_[i];
 }
-

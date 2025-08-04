@@ -7,15 +7,23 @@
 
 #include <optional>
 
-// A tic-tac-toe game state.
+// A Nim game state.
 
 class NimState : public GamePlayer::GameState
 {
 public:
     using PlayerId = GamePlayer::GameState::PlayerId;
 
+    struct Move
+    {
+        int8_t i; // Index of the heap from which objects are removed
+        int8_t n; // Number of objects removed from the heap
+    };
+
     // Constructor
-    explicit NimState(Board const & board, Rules::Variation variation = Rules::Variation::DEFAULT, PlayerId nextPlayer = PlayerId::FIRST);
+    explicit NimState(Board const &    board,
+                      Rules::Variation variation  = Rules::Variation::DEFAULT,
+                      PlayerId         nextPlayer = PlayerId::FIRST);
 
     // Destructor
     virtual ~NimState() = default;
@@ -27,7 +35,7 @@ public:
     virtual PlayerId whoseTurn() const override { return nextPlayer_; }
 
     // Returns the board.
-    Board const& board() const { return board_; }
+    Board const & board() const { return board_; }
 
     // Returns true if the game is over.
     bool isGameOver() const { return board_.empty(); }
@@ -36,15 +44,15 @@ public:
     std::optional<PlayerId> winner() const;
 
     // Returns the last move made, if any.
-    std::optional<std::pair<int, int>> lastMove() const { return lastMove_; }
+    std::optional<Move> lastMove() const { return lastMove_; }
 
     // Makes a move on the board by removing `n` objects from heap `i`.
     void move(int i, int n);
 
 private:
-    Board                               board_;         // Board stored in row-major order
-    Rules::Variation                    variation_;     // Variation of the game rules
-    PlayerId                            nextPlayer_;    // Next player to move
-    ZHash                               zHash_;         // Zobrist hash for the game state
-    std::optional<std::pair<int, int>>  lastMove_;      // Last move made (heap index and number of objects removed)
+    Board               board_;      // Board stored in row-major order
+    Rules::Variation    variation_;  // Variation of the game rules
+    PlayerId            nextPlayer_; // Next player to move
+    ZHash               zHash_;      // Zobrist hash for the game state
+    std::optional<Move> lastMove_;   // Last move made (heap index and number of objects removed)
 };

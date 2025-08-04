@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Components/Rules.h"
 #include "GamePlayer/StaticEvaluator.h"
 
 namespace GamePlayer
@@ -7,12 +8,14 @@ namespace GamePlayer
 class GameState;
 }
 
+class NimState;
+
 // A static evaluation function for tic-tac-toe.
 class NimEvaluator : public GamePlayer::StaticEvaluator
 {
 public:
     // Constructor.
-    NimEvaluator() = default;
+    explicit NimEvaluator(Rules::Variation variation = Rules::Variation::DEFAULT);
 
     // Destructor.
     virtual ~NimEvaluator() = default;
@@ -20,14 +23,19 @@ public:
     // Returns a value for the given state. Overrides StaticEvaluator::evaluate().
     virtual float evaluate(GamePlayer::GameState const & state) const override;
 
-    // Returns the value of a winning state for the first player. Overrides StaticEvaluator::firstPlayerWins().
-    virtual float firstPlayerWins() const override { return FIRST_PLAYER_WIN_VALUE; }
+    // Returns the value of a winning state for the first player. Overrides StaticEvaluator::firstPlayerWinsValue().
+    virtual float firstPlayerWinsValue() const override { return WIN_VALUE; }
 
-    // Returns the value of a winning state for the second player. Overrides StaticEvaluator::secondPlayerWins().
-    virtual float secondPlayerWins() const override { return SECOND_PLAYER_WIN_VALUE; }
+    // Returns the value of a winning state for the second player. Overrides StaticEvaluator::secondPlayerWinsValue().
+    virtual float secondPlayerWinsValue() const override { return -WIN_VALUE; }
 
 private:
     // Value constants for evaluation
-    static float constexpr FIRST_PLAYER_WIN_VALUE   = 10000.0f;
-    static float constexpr SECOND_PLAYER_WIN_VALUE  = -10000.0f;
+    static float constexpr WIN_VALUE        = 10000.0f; // Value of a state that is a winning position
+    static float constexpr LIKELY_WIN_VALUE = 5000.0f;  // Value of a state that is likely to be a winning position
+
+    float evaluateMisere(NimState const & state) const;
+    float evaluateNormal(NimState const & state) const;
+
+    Rules::Variation variation_; // Variation of the game rules
 };

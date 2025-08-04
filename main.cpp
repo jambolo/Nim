@@ -1,8 +1,8 @@
-#include "NimState/NimState.h"
-#include "HumanPlayer/HumanPlayer.h"
-#include "ComputerPlayer/ComputerPlayer.h"
 #include "Components/Board.h"
 #include "Components/Rules.h"
+#include "ComputerPlayer/ComputerPlayer.h"
+#include "HumanPlayer/HumanPlayer.h"
+#include "NimState/NimState.h"
 
 #include <CLI/CLI.hpp>
 
@@ -11,22 +11,22 @@
 
 using namespace GamePlayer;
 
-static void displayBoard(const Board& board);
+static void displayBoard(const Board & board);
 
 int main(int argc, char * argv[])
 {
-    bool humanGoesFirst = true;     // Human player goes first by default
-    Rules::Variation variation = Rules::Variation::MISERE; // Default variation is misère
-    std::vector<int> initialConfiguration{ 1, 3, 5, 7 }; // Default initial configuration
+    bool                humanGoesFirst = true;                     // Human player goes first by default
+    Rules::Variation    variation      = Rules::Variation::MISERE; // Default variation is misère
+    std::vector<int8_t> initialConfiguration{3, 4, 5};             // Default initial configuration
 
     {
-        CLI::App cli;
+        CLI::App            cli;
         bool                first  = false;
         bool                second = false;
         bool                normal = false;
-        std::vector<int>    initial;
+        std::vector<int8_t> initial;
 
-        auto *   order  = cli.add_option_group("Order of play", "Choose who goes first");
+        auto * order = cli.add_option_group("Order of play", "Choose who goes first");
         order->add_flag("--first, -f", first, "You go first. (default)");
         order->add_flag("--second, -s", second, "The computer goes first.");
         order->require_option(0, 1);
@@ -61,8 +61,8 @@ int main(int argc, char * argv[])
     std::cout << "  Variation: " << (variation == Rules::Variation::NORMAL ? "Normal" : "Misère") << std::endl;
     std::cout << std::endl;
 
-    Board initialBoard(initialConfiguration);
-    NimState state(initialBoard, variation);
+    Board          initialBoard(initialConfiguration);
+    NimState       state(initialBoard, variation);
     HumanPlayer    human(humanGoesFirst ? GameState::PlayerId::FIRST : GameState::PlayerId::SECOND, variation);
     ComputerPlayer computer(humanGoesFirst ? GameState::PlayerId::SECOND : GameState::PlayerId::FIRST, variation);
 
@@ -76,8 +76,10 @@ int main(int argc, char * argv[])
         else
         {
             computer.move(&state);
-            std::cout << "The computer removed " << state.lastMove()->second << " from heap " 
-                << char('A' + state.lastMove()->first) << "." << std::endl;
+            assert(state.lastMove().has_value());
+            NimState::Move move = state.lastMove().value();
+            std::cout << "The computer removed " << static_cast<int>(move.n) << " from heap " << char('A' + move.i) << "."
+                      << std::endl;
         }
     }
     // Game is over, display the final board state
