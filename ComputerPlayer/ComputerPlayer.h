@@ -18,7 +18,7 @@ class ComputerPlayer : public Player
 {
 public:
     // Constructor
-    explicit ComputerPlayer(NimState::PlayerId playerId, Rules::Variation variation = Rules::Variation::DEFAULT);
+    explicit ComputerPlayer(NimState::PlayerId playerId, Rules const & rules);
 
     // Noncopyable
     ComputerPlayer(ComputerPlayer const &) = delete;

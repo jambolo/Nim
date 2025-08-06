@@ -21,9 +21,7 @@ public:
     };
 
     // Constructor
-    explicit NimState(Board const &    board,
-                      Rules::Variation variation  = Rules::Variation::DEFAULT,
-                      PlayerId         nextPlayer = PlayerId::FIRST);
+    explicit NimState(Board const & board, Rules rules, PlayerId nextPlayer = PlayerId::FIRST);
 
     // Destructor
     virtual ~NimState() = default;
@@ -51,7 +49,7 @@ public:
 
 private:
     Board               board_;      // Board stored in row-major order
-    Rules::Variation    variation_;  // Variation of the game rules
+    Rules               rules_;      // The rules for the game being played
     PlayerId            nextPlayer_; // Next player to move
     ZHash               zHash_;      // Zobrist hash for the game state
     std::optional<Move> lastMove_;   // Last move made (heap index and number of objects removed)

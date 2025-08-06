@@ -9,8 +9,9 @@ namespace Nim
 TEST(HumanPlayer, Constructor)
 {
     // Nothing to test here, just make sure the constructor executes without error
-    ASSERT_NO_THROW(HumanPlayer(NimState::PlayerId::FIRST, Rules::Variation::MISERE));
-    ASSERT_NO_THROW(HumanPlayer(NimState::PlayerId::SECOND, Rules::Variation::NORMAL));
+    Rules rules;
+    ASSERT_NO_THROW(HumanPlayer(NimState::PlayerId::FIRST, rules));
+    ASSERT_NO_THROW(HumanPlayer(NimState::PlayerId::SECOND, rules));
 }
 
 TEST(HumanPlayer, Move)

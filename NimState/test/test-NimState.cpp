@@ -8,65 +8,77 @@ namespace Nim
 TEST(NimState, Constructor)
 {
     // Nothing to test here, just make sure the constructor executes without error
-    NimState state(Board({1, 2, 3}));
+    Rules    rules;
+    NimState state(Board({1, 2, 3}), rules);
 }
 
 TEST(NimState, Fingerprint)
 {
     // Fingerprint values are determined at run-time, but the fingerprint of an empty board should be 0 and a non-empty board
     // should not be 0.
+    Rules rules;
     {
-        NimState emptyState(Board({0, 0, 0}));
+        NimState emptyState(Board({0, 0, 0}), rules);
         EXPECT_EQ(emptyState.fingerprint(), 0);
     }
     {
-        NimState nonEmptyState(Board({1, 2, 3}));
+        NimState nonEmptyState(Board({1, 2, 3}), rules);
         EXPECT_NE(nonEmptyState.fingerprint(), 0);
     }
 }
 
 TEST(NimState, WhoseTurn)
 {
-    EXPECT_EQ(NimState(Board({0, 0, 0}), Rules::Variation::DEFAULT, NimState::PlayerId::FIRST).whoseTurn(),
-              NimState::PlayerId::FIRST);
-    EXPECT_EQ(NimState(Board({0, 0, 0}), Rules::Variation::DEFAULT, NimState::PlayerId::SECOND).whoseTurn(),
-              NimState::PlayerId::SECOND);
+    Rules rules;
+    EXPECT_EQ(NimState(Board({0, 0, 0}), rules, NimState::PlayerId::FIRST).whoseTurn(), NimState::PlayerId::FIRST);
+    EXPECT_EQ(NimState(Board({0, 0, 0}), rules, NimState::PlayerId::SECOND).whoseTurn(), NimState::PlayerId::SECOND);
 }
 
 TEST(NimState, Board)
 {
+    Rules rules;
     {
         Board empty({0});
-        EXPECT_EQ(NimState(empty).board(), empty);
+        EXPECT_EQ(NimState(empty, rules).board(), empty);
     }
     {
         Board board({1, 2, 3});
-        EXPECT_EQ(NimState(board).board(), board);
+        EXPECT_EQ(NimState(board, rules).board(), board);
     }
 }
 
 TEST(NimState, IsGameOver)
 {
-    EXPECT_TRUE(NimState(Board({0})).isGameOver());        // An empty board is game over
-    EXPECT_FALSE(NimState(Board({1, 2, 3})).isGameOver()); // A non-empty board is not game over
+    Rules rules;
+    EXPECT_TRUE(NimState(Board({0}), rules).isGameOver());  // An empty board is game over
+    EXPECT_FALSE(NimState(Board({1}), rules).isGameOver()); // A non-empty board is not game over
 }
 
 TEST(NimState, Winner)
 {
-    Board empty({0, 0, 0});
-    ASSERT_TRUE(NimState(empty).isGameOver()); // Sanity check: the game should be over when all heaps are empty
+    Rules misereRules(Rules::Variation::MISERE);
+    Rules normalRules(Rules::Variation::NORMAL);
+    Rules subtractRules(Rules::Variation::SUBTRACT);
+    Board empty({0});
+
+    ASSERT_TRUE(NimState(empty, misereRules).isGameOver());   // Sanity check: the game should be over when all heaps are empty
+    ASSERT_TRUE(NimState(empty, normalRules).isGameOver());   // Sanity check: the game should be over when all heaps are empty
+    ASSERT_TRUE(NimState(empty, subtractRules).isGameOver()); // Sanity check: the game should be over when all heaps are empty
 
     // The winner depends on the variation of the game rules, but an empty board has no winner.
-    EXPECT_FALSE(NimState(Board({1, 2, 3})).winner());
-    EXPECT_EQ(NimState(empty, Rules::Variation::MISERE, NimState::PlayerId::FIRST).winner(), NimState::PlayerId::FIRST);
-    EXPECT_EQ(NimState(empty, Rules::Variation::MISERE, NimState::PlayerId::SECOND).winner(), NimState::PlayerId::SECOND);
-    EXPECT_EQ(NimState(empty, Rules::Variation::NORMAL, NimState::PlayerId::FIRST).winner(), NimState::PlayerId::SECOND);
-    EXPECT_EQ(NimState(empty, Rules::Variation::NORMAL, NimState::PlayerId::SECOND).winner(), NimState::PlayerId::FIRST);
+    EXPECT_FALSE(NimState(Board({1, 2, 3}), misereRules).winner());
+    EXPECT_EQ(NimState(empty, misereRules, NimState::PlayerId::FIRST).winner(), NimState::PlayerId::FIRST);
+    EXPECT_EQ(NimState(empty, normalRules, NimState::PlayerId::FIRST).winner(), NimState::PlayerId::SECOND);
+    EXPECT_EQ(NimState(empty, subtractRules, NimState::PlayerId::FIRST).winner(), NimState::PlayerId::SECOND);
+    EXPECT_EQ(NimState(empty, misereRules, NimState::PlayerId::SECOND).winner(), NimState::PlayerId::SECOND);
+    EXPECT_EQ(NimState(empty, normalRules, NimState::PlayerId::SECOND).winner(), NimState::PlayerId::FIRST);
+    EXPECT_EQ(NimState(empty, subtractRules, NimState::PlayerId::SECOND).winner(), NimState::PlayerId::FIRST);
 }
 
 TEST(NimState, LastMove)
 {
-    NimState state(Board({0, 0, 1}));
+    Rules    rules;
+    NimState state(Board({0, 0, 1}), rules);
     EXPECT_EQ(state.lastMove(), std::nullopt); // No moves made yet
 
     state.move(2, 1);                          // Make a move
@@ -77,7 +89,8 @@ TEST(NimState, LastMove)
 
 TEST(NimState, Move)
 {
-    NimState state(Board({1, 0, 1}), Rules::Variation::DEFAULT, NimState::PlayerId::FIRST);
+    Rules    rules(Rules::Variation::MISERE);
+    NimState state(Board({1, 0, 1}), rules, NimState::PlayerId::FIRST);
     uint64_t f0 = state.fingerprint(); // Store the initial fingerprint
 
     // If the first player removes 1 object from heap 2, the board should be {1, 0, 0}, the next player should be SECOND,

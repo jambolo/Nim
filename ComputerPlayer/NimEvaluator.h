@@ -15,7 +15,7 @@ class NimEvaluator : public GamePlayer::StaticEvaluator
 {
 public:
     // Constructor.
-    explicit NimEvaluator(Rules::Variation variation = Rules::Variation::DEFAULT);
+    explicit NimEvaluator(Rules rules);
 
     // Destructor.
     virtual ~NimEvaluator() = default;
@@ -36,6 +36,7 @@ private:
 
     float evaluateMisere(NimState const & state) const;
     float evaluateNormal(NimState const & state) const;
+    float evaluateSubtract(NimState const & state) const;
 
-    Rules::Variation variation_; // Variation of the game rules
+    Rules rules_; // The rules for the game being played
 };

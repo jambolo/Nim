@@ -7,9 +7,9 @@
 class Player
 {
 public:
-    Player(NimState::PlayerId playerId, Rules::Variation variation)
+    Player(NimState::PlayerId playerId, Rules rules)
         : playerId_(playerId)
-        , variation_(variation)
+        , rules_(std::move(rules))
     {
     }
 
@@ -23,5 +23,5 @@ public:
 
 protected:
     NimState::PlayerId playerId_;  // The player's ID
-    Rules::Variation   variation_; // The variation of the game being played
+    Rules              rules_;     // The rules for the game being played
 };

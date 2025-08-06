@@ -3,15 +3,14 @@
 #include "ZHash.h"
 
 #include "Components/Board.h"
+#include "Components/Rules.h"
 
 #include <cassert>
 #include <optional>
 
-NimState::NimState(Board const &    board,
-                   Rules::Variation variation /* = Rules::Variation::DEFAULT*/,
-                   PlayerId         nextPlayer /* = PlayerId::FIRST*/)
+NimState::NimState(Board const & board, Rules rules, PlayerId nextPlayer /* = PlayerId::FIRST*/)
     : board_(board)
-    , variation_(variation)
+    , rules_(std::move(rules))
     , nextPlayer_(nextPlayer)
     , zHash_(board, nextPlayer)
     , lastMove_(std::nullopt)
@@ -24,11 +23,12 @@ std::optional<NimState::PlayerId> NimState::winner() const
     if (!isGameOver())
         return std::nullopt;
 
-    switch (variation_)
+    switch (rules_.variation())
     {
     case Rules::Variation::MISERE: // The player who makes the last move loses
         return nextPlayer_;
     case Rules::Variation::NORMAL: // The player who made the last move wins
+    case Rules::Variation::SUBTRACT:
         return (nextPlayer_ == PlayerId::FIRST) ? PlayerId::SECOND : PlayerId::FIRST;
     default:
         assert(false && "Unknown variation of the game rules");

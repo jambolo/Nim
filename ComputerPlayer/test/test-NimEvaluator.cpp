@@ -10,16 +10,17 @@ namespace Nim
 
 TEST(NimEvaluator, Constructor)
 {
+    Rules rules;
     // Nothing to test here, just make sure the constructor executes without error
-    ASSERT_NO_THROW(NimEvaluator{Rules::Variation::MISERE});
-    ASSERT_NO_THROW(NimEvaluator{Rules::Variation::NORMAL});
+    ASSERT_NO_THROW(NimEvaluator{rules});
 }
 
 TEST(NimEvaluator, Evaluate)
 {
     // I don't know how to test this yet, so just make sure it runs without error.
-    NimEvaluator evaluator(Rules::Variation::DEFAULT);
-    NimState     state(Board({1, 2, 3}));
+    Rules        rules;
+    NimEvaluator evaluator(rules);
+    NimState     state(Board({1, 2, 3}), rules);
     ASSERT_NO_THROW(evaluator.evaluate(state));
 }
 

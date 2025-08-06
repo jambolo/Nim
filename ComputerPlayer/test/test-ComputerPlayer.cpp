@@ -36,18 +36,18 @@ TEST(ComputerPlayer, Constructor)
 {
     // Nothing to test here, just make sure the constructor executes without error.
     // There are only 4 combinations, so let's test them all.
-    ASSERT_NO_THROW(ComputerPlayer(NimState::PlayerId::FIRST, Rules::Variation::MISERE));
-    ASSERT_NO_THROW(ComputerPlayer(NimState::PlayerId::FIRST, Rules::Variation::NORMAL));
-    ASSERT_NO_THROW(ComputerPlayer(NimState::PlayerId::SECOND, Rules::Variation::MISERE));
-    ASSERT_NO_THROW(ComputerPlayer(NimState::PlayerId::SECOND, Rules::Variation::NORMAL));
+    Rules rules;
+    ASSERT_NO_THROW(ComputerPlayer(NimState::PlayerId::FIRST, rules));
+    ASSERT_NO_THROW(ComputerPlayer(NimState::PlayerId::SECOND, rules));
 }
 
 TEST(ComputerPlayer, Move)
 {
-    ComputerPlayer computer1(NimState::PlayerId::FIRST);
-    ComputerPlayer computer2(NimState::PlayerId::SECOND);
+    Rules          rules(Rules::Variation::NORMAL);
+    ComputerPlayer computer1(NimState::PlayerId::FIRST, rules);
+    ComputerPlayer computer2(NimState::PlayerId::SECOND, rules);
     Board          board0({3, 4, 5});
-    NimState       state(board0);
+    NimState       state(board0, rules);
 
     // Move until the board is empty
     while (!state.isGameOver())

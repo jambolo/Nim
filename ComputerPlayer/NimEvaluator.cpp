@@ -11,9 +11,9 @@ static NimState::PlayerId otherPlayer(NimState::PlayerId player)
     return (player == NimState::PlayerId::FIRST) ? NimState::PlayerId::SECOND : NimState::PlayerId::FIRST;
 }
 
-NimEvaluator::NimEvaluator(Rules::Variation variation /* = Rules::Variation::DEFAULT*/)
+NimEvaluator::NimEvaluator(Rules rules)
     : GamePlayer::StaticEvaluator()
-    , variation_(variation)
+    , rules_(std::move(rules))
 {
 }
 
@@ -31,13 +31,16 @@ float NimEvaluator::evaluate(GamePlayer::GameState const & state) const
     // Otherwise, evaluate the state based on the variation.
     else
     {
-        switch (variation_)
+        switch (rules_.variation())
         {
         case Rules::Variation::MISERE:
             score = evaluateMisere(nimState);
             break;
         case Rules::Variation::NORMAL:
             score = evaluateNormal(nimState);
+            break;
+        case Rules::Variation::SUBTRACT:
+            score = evaluateSubtract(nimState);
             break;
         default:
             assert(false && "Unknown variation");
@@ -95,4 +98,19 @@ float NimEvaluator::evaluateNormal(NimState const & state) const
     float        losingStateValue  = -winningStateValue;
 
     return (board.nimSum() == 0) ? winningStateValue : losingStateValue;
+}
+
+float NimEvaluator::evaluateSubtract(NimState const & state) const
+{
+    auto const & board             = state.board();
+    auto         player            = otherPlayer(state.whoseTurn()); // Player who made the move
+    bool         playerIsFirst     = (player == GamePlayer::GameState::PlayerId::FIRST);
+    float        winningStateValue = playerIsFirst ? LIKELY_WIN_VALUE : -LIKELY_WIN_VALUE;
+    float        losingStateValue  = -winningStateValue;
+
+    if (rules_.removalLimit() > 1)
+    {
+        return 0.0f;
+    }
+    return (board.heap(0) % (rules_.removalLimit() + 1) == 0) ? winningStateValue : losingStateValue;
 }

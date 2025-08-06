@@ -9,11 +9,12 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Use modern CMAKE policies
+# Use modern CMake policies
 cmake_policy(SET CMP0077 NEW)  # option() honors normal variables
 cmake_policy(SET CMP0074 NEW)  # find_package uses <PackageName>_ROOT variables
 
 # Project-wide options
+option(BUILD_TESTING "Build unit tests" OFF)
 option(BUILD_SHARED_LIBS "Build libraries as shared libraries" OFF)
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
