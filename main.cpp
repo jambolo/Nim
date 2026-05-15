@@ -21,7 +21,7 @@ int main(int argc, char * argv[])
 
     {
         CLI::App            cli;
-        bool                first       = true;
+        bool                first       = false;
         bool                second      = false;
         bool                misere      = true;
         bool                normal      = false;
@@ -99,13 +99,15 @@ int main(int argc, char * argv[])
             });
         CLI11_PARSE(cli, argc, argv);
 
-        if (first)
-        {
-            humanGoesFirst = true;
-        }
-        else if (second)
+        std::cout << "first: " << first << ", second: " << second << ", misere: " << misere << ", normal: " << normal
+                  << ", subtraction: " << subtraction << ", initial: ";
+        if (second)
         {
             humanGoesFirst = false;
+        }
+        else // (first)
+        {
+            humanGoesFirst = true;
         }
 
         if (normal)
@@ -129,8 +131,8 @@ int main(int argc, char * argv[])
 
     Board          initialBoard(initialConfiguration);
     NimState       state(initialBoard, rules);
-    HumanPlayer    human(humanGoesFirst ? GameState::PlayerId::FIRST : GameState::PlayerId::SECOND, rules);
-    ComputerPlayer computer(humanGoesFirst ? GameState::PlayerId::SECOND : GameState::PlayerId::FIRST, rules);
+    HumanPlayer    human(humanGoesFirst ? GameState::PlayerId::ALICE : GameState::PlayerId::BOB, rules);
+    ComputerPlayer computer(humanGoesFirst ? GameState::PlayerId::BOB : GameState::PlayerId::ALICE, rules);
 
     while (!state.isGameOver())
     {

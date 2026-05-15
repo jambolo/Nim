@@ -21,7 +21,7 @@ public:
     };
 
     // Constructor
-    explicit NimState(Board const & board, Rules rules, PlayerId nextPlayer = PlayerId::FIRST);
+    explicit NimState(Board const & board, Rules rules, PlayerId nextPlayer = PlayerId::ALICE);
 
     // Destructor
     virtual ~NimState() = default;

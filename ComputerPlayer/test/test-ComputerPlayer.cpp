@@ -37,15 +37,15 @@ TEST(ComputerPlayer, Constructor)
     // Nothing to test here, just make sure the constructor executes without error.
     // There are only 4 combinations, so let's test them all.
     Rules rules;
-    ASSERT_NO_THROW(ComputerPlayer(NimState::PlayerId::FIRST, rules));
-    ASSERT_NO_THROW(ComputerPlayer(NimState::PlayerId::SECOND, rules));
+    ASSERT_NO_THROW(ComputerPlayer(NimState::PlayerId::ALICE, rules));
+    ASSERT_NO_THROW(ComputerPlayer(NimState::PlayerId::BOB, rules));
 }
 
 TEST(ComputerPlayer, Move)
 {
     Rules          rules(Rules::Variation::NORMAL);
-    ComputerPlayer computer1(NimState::PlayerId::FIRST, rules);
-    ComputerPlayer computer2(NimState::PlayerId::SECOND, rules);
+    ComputerPlayer computer1(NimState::PlayerId::ALICE, rules);
+    ComputerPlayer computer2(NimState::PlayerId::BOB, rules);
     Board          board0({3, 4, 5});
     NimState       state(board0, rules);
 

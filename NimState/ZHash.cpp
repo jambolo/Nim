@@ -20,7 +20,7 @@ ZHash::ZHash(Board const & board, GamePlayer::GameState::PlayerId nextPlayer)
     }
 
     // The hash for the first player is 0.
-    if (nextPlayer == GamePlayer::GameState::PlayerId::SECOND)
+    if (nextPlayer == GamePlayer::GameState::PlayerId::BOB)
         value_ ^= zValueTable_.nextPlayer_;
 }
 

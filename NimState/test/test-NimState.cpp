@@ -30,8 +30,8 @@ TEST(NimState, Fingerprint)
 TEST(NimState, WhoseTurn)
 {
     Rules rules;
-    EXPECT_EQ(NimState(Board({0, 0, 0}), rules, NimState::PlayerId::FIRST).whoseTurn(), NimState::PlayerId::FIRST);
-    EXPECT_EQ(NimState(Board({0, 0, 0}), rules, NimState::PlayerId::SECOND).whoseTurn(), NimState::PlayerId::SECOND);
+    EXPECT_EQ(NimState(Board({0, 0, 0}), rules, NimState::PlayerId::ALICE).whoseTurn(), NimState::PlayerId::ALICE);
+    EXPECT_EQ(NimState(Board({0, 0, 0}), rules, NimState::PlayerId::BOB).whoseTurn(), NimState::PlayerId::BOB);
 }
 
 TEST(NimState, Board)
@@ -67,12 +67,12 @@ TEST(NimState, Winner)
 
     // The winner depends on the variation of the game rules, but an empty board has no winner.
     EXPECT_FALSE(NimState(Board({1, 2, 3}), misereRules).winner());
-    EXPECT_EQ(NimState(empty, misereRules, NimState::PlayerId::FIRST).winner(), NimState::PlayerId::FIRST);
-    EXPECT_EQ(NimState(empty, normalRules, NimState::PlayerId::FIRST).winner(), NimState::PlayerId::SECOND);
-    EXPECT_EQ(NimState(empty, subtractRules, NimState::PlayerId::FIRST).winner(), NimState::PlayerId::SECOND);
-    EXPECT_EQ(NimState(empty, misereRules, NimState::PlayerId::SECOND).winner(), NimState::PlayerId::SECOND);
-    EXPECT_EQ(NimState(empty, normalRules, NimState::PlayerId::SECOND).winner(), NimState::PlayerId::FIRST);
-    EXPECT_EQ(NimState(empty, subtractRules, NimState::PlayerId::SECOND).winner(), NimState::PlayerId::FIRST);
+    EXPECT_EQ(NimState(empty, misereRules, NimState::PlayerId::ALICE).winner(), NimState::PlayerId::ALICE);
+    EXPECT_EQ(NimState(empty, normalRules, NimState::PlayerId::ALICE).winner(), NimState::PlayerId::BOB);
+    EXPECT_EQ(NimState(empty, subtractRules, NimState::PlayerId::ALICE).winner(), NimState::PlayerId::BOB);
+    EXPECT_EQ(NimState(empty, misereRules, NimState::PlayerId::BOB).winner(), NimState::PlayerId::BOB);
+    EXPECT_EQ(NimState(empty, normalRules, NimState::PlayerId::BOB).winner(), NimState::PlayerId::ALICE);
+    EXPECT_EQ(NimState(empty, subtractRules, NimState::PlayerId::BOB).winner(), NimState::PlayerId::ALICE);
 }
 
 TEST(NimState, LastMove)
@@ -90,22 +90,22 @@ TEST(NimState, LastMove)
 TEST(NimState, Move)
 {
     Rules    rules(Rules::Variation::MISERE);
-    NimState state(Board({1, 0, 1}), rules, NimState::PlayerId::FIRST);
+    NimState state(Board({1, 0, 1}), rules, NimState::PlayerId::ALICE);
     uint64_t f0 = state.fingerprint(); // Store the initial fingerprint
 
-    // If the first player removes 1 object from heap 2, the board should be {1, 0, 0}, the next player should be SECOND,
+    // If the first player removes 1 object from heap 2, the board should be {1, 0, 0}, the next player should be BOB,
     // and the fingerprint should be updated.
     state.move(2, 1);
     EXPECT_EQ(state.board(), Board({1, 0, 0}));               // The board should be {1, 0, 0}
-    EXPECT_EQ(state.whoseTurn(), NimState::PlayerId::SECOND); // The next player should be SECOND
+    EXPECT_EQ(state.whoseTurn(), NimState::PlayerId::BOB); // The next player should be BOB
     EXPECT_NE(state.fingerprint(), f0);                       // The fingerprint should have changed
 
     // If the second player removes the last object, the board should be empty, the game should be over, the next player
-    // should be FIRST, and the fingerprint should be 0.
+    // should be ALICE, and the fingerprint should be 0.
     state.move(0, 1);
     EXPECT_TRUE(state.board().empty());                      // The board should be empty
     EXPECT_TRUE(state.isGameOver());                         // The game should be over
-    EXPECT_EQ(state.whoseTurn(), NimState::PlayerId::FIRST); // The next player should be FIRST
+    EXPECT_EQ(state.whoseTurn(), NimState::PlayerId::ALICE); // The next player should be ALICE
     EXPECT_EQ(state.fingerprint(), 0);                       // The fingerprint should be 0
 }
 

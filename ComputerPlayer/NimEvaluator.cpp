@@ -8,7 +8,7 @@
 
 static NimState::PlayerId otherPlayer(NimState::PlayerId player)
 {
-    return (player == NimState::PlayerId::FIRST) ? NimState::PlayerId::SECOND : NimState::PlayerId::FIRST;
+    return (player == NimState::PlayerId::ALICE) ? NimState::PlayerId::BOB : NimState::PlayerId::ALICE;
 }
 
 NimEvaluator::NimEvaluator(Rules rules)
@@ -26,7 +26,7 @@ float NimEvaluator::evaluate(GamePlayer::GameState const & state) const
     // If the game is over, then return the score for the winner
     if (nimState.isGameOver())
     {
-        score = (nimState.winner().value() == GamePlayer::GameState::PlayerId::FIRST) ? WIN_VALUE : -WIN_VALUE;
+        score = (nimState.winner().value() == GamePlayer::GameState::PlayerId::ALICE) ? WIN_VALUE : -WIN_VALUE;
     }
     // Otherwise, evaluate the state based on the variation.
     else
@@ -54,7 +54,7 @@ float NimEvaluator::evaluate(GamePlayer::GameState const & state) const
     auto lastMove = nimState.lastMove();
     if (lastMove.has_value())
     {
-        score += (nimState.whoseTurn() == GamePlayer::GameState::PlayerId::FIRST) ? -float(lastMove->n) : float(lastMove->n);
+        score += (nimState.whoseTurn() == GamePlayer::GameState::PlayerId::ALICE) ? -float(lastMove->n) : float(lastMove->n);
     }
     return score;
 }
@@ -63,7 +63,7 @@ float NimEvaluator::evaluateMisere(NimState const & state) const
 {
     auto const & board             = state.board();
     auto         player            = otherPlayer(state.whoseTurn()); // Player who made the move
-    bool         playerIsFirst     = (player == GamePlayer::GameState::PlayerId::FIRST);
+    bool         playerIsFirst     = (player == GamePlayer::GameState::PlayerId::ALICE);
     float        winningStateValue = playerIsFirst ? LIKELY_WIN_VALUE : -LIKELY_WIN_VALUE;
     float        losingStateValue  = -winningStateValue;
 
@@ -93,7 +93,7 @@ float NimEvaluator::evaluateNormal(NimState const & state) const
 {
     auto const & board             = state.board();
     auto         player            = otherPlayer(state.whoseTurn()); // Player who made the move
-    bool         playerIsFirst     = (player == GamePlayer::GameState::PlayerId::FIRST);
+    bool         playerIsFirst     = (player == GamePlayer::GameState::PlayerId::ALICE);
     float        winningStateValue = playerIsFirst ? LIKELY_WIN_VALUE : -LIKELY_WIN_VALUE;
     float        losingStateValue  = -winningStateValue;
 
@@ -104,7 +104,7 @@ float NimEvaluator::evaluateSubtract(NimState const & state) const
 {
     auto const & board             = state.board();
     auto         player            = otherPlayer(state.whoseTurn()); // Player who made the move
-    bool         playerIsFirst     = (player == GamePlayer::GameState::PlayerId::FIRST);
+    bool         playerIsFirst     = (player == GamePlayer::GameState::PlayerId::ALICE);
     float        winningStateValue = playerIsFirst ? LIKELY_WIN_VALUE : -LIKELY_WIN_VALUE;
     float        losingStateValue  = -winningStateValue;
 

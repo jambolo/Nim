@@ -39,25 +39,25 @@ TEST(ZHash, Constructor_z)
 TEST(ZHash, Constructor_board_player)
 {
     // Make sure that the constructor works.
-    ASSERT_NO_THROW(ZHash(Board({1, 2, 3}), NimState::PlayerId::FIRST));
+    ASSERT_NO_THROW(ZHash(Board({1, 2, 3}), NimState::PlayerId::ALICE));
 
     // The hash can't compared to specific values without a predefined ZValueTable, but we can make sure that they vary for
     // different boards and players.
 
     {
         Board empty({0, 0, 0});
-        ZHash z0(empty, NimState::PlayerId::FIRST); // Empty board and first player
+        ZHash z0(empty, NimState::PlayerId::ALICE); // Empty board and first player
         EXPECT_EQ(z0.value(), ZHash::EMPTY);        // Should have a value of 0
 
-        ZHash z1(empty, NimState::PlayerId::SECOND); // Empty board and second player
+        ZHash z1(empty, NimState::PlayerId::BOB); // Empty board and second player
         EXPECT_NE(z1.value(), ZHash::EMPTY);         // Should not have a value of 0.
 
         Board board1({1, 2, 3});
-        ZHash z2(board1, NimState::PlayerId::FIRST); // Non-empty board and first player
+        ZHash z2(board1, NimState::PlayerId::ALICE); // Non-empty board and first player
         EXPECT_NE(z2.value(), ZHash::EMPTY);         // Should not have a value of 0.
         EXPECT_NE(z2.value(), z1.value());           // Should not have the value of any other board.
 
-        ZHash z3(board1, NimState::PlayerId::SECOND); // Non-empty board and second player
+        ZHash z3(board1, NimState::PlayerId::BOB); // Non-empty board and second player
         EXPECT_NE(z3.value(), ZHash::EMPTY);          // Should not have a value of 0.
         EXPECT_NE(z3.value(), z1.value());            // Should not have the value of any other board.
         EXPECT_NE(z3.value(), z2.value());            // Should not have the value of any other board.
@@ -80,7 +80,7 @@ TEST(ZHash, Constructor_board_player)
         std::transform(std::begin(boards),
                        std::end(boards),
                        std::back_inserter(hashes),
-                       [](const Board & board) { return ZHash(board, NimState::PlayerId::FIRST); });
+                       [](const Board & board) { return ZHash(board, NimState::PlayerId::ALICE); });
 
         // Make sure that none of the hashes are 0.
         for (auto const & hash : hashes)

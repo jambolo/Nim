@@ -24,10 +24,10 @@ public:
     virtual float evaluate(GamePlayer::GameState const & state) const override;
 
     // Returns the value of a winning state for the first player. Overrides StaticEvaluator::firstPlayerWinsValue().
-    virtual float firstPlayerWinsValue() const override { return WIN_VALUE; }
+    virtual float aliceWinsValue() const override { return WIN_VALUE; }
 
     // Returns the value of a winning state for the second player. Overrides StaticEvaluator::secondPlayerWinsValue().
-    virtual float secondPlayerWinsValue() const override { return -WIN_VALUE; }
+    virtual float bobWinsValue() const override { return -WIN_VALUE; }
 
 private:
     // Value constants for evaluation

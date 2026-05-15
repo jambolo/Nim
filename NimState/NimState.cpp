@@ -8,7 +8,7 @@
 #include <cassert>
 #include <optional>
 
-NimState::NimState(Board const & board, Rules rules, PlayerId nextPlayer /* = PlayerId::FIRST*/)
+NimState::NimState(Board const & board, Rules rules, PlayerId nextPlayer /* = PlayerId::ALICE*/)
     : board_(board)
     , rules_(std::move(rules))
     , nextPlayer_(nextPlayer)
@@ -29,7 +29,7 @@ std::optional<NimState::PlayerId> NimState::winner() const
         return nextPlayer_;
     case Rules::Variation::NORMAL: // The player who made the last move wins
     case Rules::Variation::SUBTRACT:
-        return (nextPlayer_ == PlayerId::FIRST) ? PlayerId::SECOND : PlayerId::FIRST;
+        return GameState::otherPlayer(nextPlayer_);
     default:
         assert(false && "Unknown variation of the game rules");
         return std::nullopt; // Return no winner if the variation is unknown
@@ -46,7 +46,7 @@ void NimState::move(int i, int n)
     board_.remove(i, n);            // Update the heap
     zHash_.changeHeap(i, from, to); // Update the Zobrist hash for the heap change
 
-    nextPlayer_ = (nextPlayer_ == PlayerId::FIRST) ? PlayerId::SECOND : PlayerId::FIRST; // Switch players
+    nextPlayer_ = GameState::otherPlayer(nextPlayer_); // Switch players
     zHash_.changeNextPlayer(); // Update the Zobrist hash for the player change
 
     lastMove_ = Move{static_cast<int8_t>(i), static_cast<int8_t>(n)}; // Store the last move made

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 project(Nim 
-    VERSION 1.1.0 
+    VERSION 1.1.1 
     LANGUAGES CXX
 )
 
@@ -23,7 +23,9 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 # External dependencies
-#find_package(nlohmann_json REQUIRED)
+
+find_package(CLI11 CONFIG REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
 
 if(WIN32)
     add_compile_definitions(
@@ -35,8 +37,6 @@ if(WIN32)
         _SCL_SECURE_NO_WARNINGS
 )
 endif()
-
-find_package(CLI11 REQUIRED)
 
 set(SOURCES
     main.cpp
@@ -53,7 +53,7 @@ target_link_libraries(nim PRIVATE
     NimState
 
     CLI11::CLI11
-#    nlohmann_json::nlohmann_json
+    nlohmann_json::nlohmann_json
 )
 
 # Source grouping for IDEs
