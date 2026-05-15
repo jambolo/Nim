@@ -1,6 +1,8 @@
 # Nim
 Play a game of Nim against a computer opponent.
 
+[![Build](https://github.com/jambolo/Nim/actions/workflows/ci-cmake-multi-platforms.yml/badge.svg?branch=master)](https://github.com/jambolo/Nim/actions/workflows/ci-cmake-multi-platforms.yml?query=branch%3Amaster)
+
 ## Command Syntax
 `nim [--first|-f|--second|-s] [--misere|--normal|--subtraction] [(--initial|-i) <heap sizes>] [--help|-h]`
 

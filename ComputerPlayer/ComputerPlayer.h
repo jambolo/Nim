@@ -24,7 +24,7 @@ public:
     ComputerPlayer(ComputerPlayer const &) = delete;
 
     // Makes a move on the game state. Overrides Player::move().
-    void ComputerPlayer::move(NimState * pState) override;
+    void move(NimState * pState) override;
 
 private:
     GamePlayer::GameTree *                          gameTree_;           // Game tree for searching responses

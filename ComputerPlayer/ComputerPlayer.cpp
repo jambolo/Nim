@@ -43,10 +43,10 @@ void ComputerPlayer::move(NimState * pState)
     assert(pState->whoseTurn() == playerId_);
     assert(pState->isGameOver() == false);
 
-    // Find the best response to the current state
-    auto pCopy = std::make_shared<NimState>(*pState);
-    gameTree_->findBestResponse(std::static_pointer_cast<GamePlayer::GameState>(pCopy));
-    auto pResponse = std::dynamic_pointer_cast<NimState>(pCopy->response_);
+    std::shared_ptr<GamePlayer::GameState> s0 = std::make_shared<NimState>(*pState);
+    gameTree_->findBestResponse(s0);
+
+    auto pResponse = std::dynamic_pointer_cast<NimState>(s0->response_);
     assert(pResponse);
     *pState = *pResponse;
 }

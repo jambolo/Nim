@@ -36,7 +36,7 @@ int main(int argc, char * argv[])
         auto * variations = cli.add_option_group("Game variation", "Choose the variation of Nim to play");
         variations->add_flag("--misere", misere, "")
             ->description(
-                "(default) In the misËre variation, you win by forcing the other player to take the last object. The default "
+                "(default) In the mis√®re variation, you win by forcing the other player to take the last object. The default "
                 "setup for this variation is 1 3 5 7 9.");
         variations->add_flag("--normal", normal, "")
             ->description("In the normal variation, you win by taking the last object. The default setup for this variation is "
@@ -49,7 +49,7 @@ int main(int argc, char * argv[])
         variations->require_option(0, 1);
 
         cli.add_option("--initial, -i", initial, "Initial configuration")
-            ->description("For the misËre and normal variations, a list of 1 to 5 numbers with values between 1 and 9 is "
+            ->description("For the mis√®re and normal variations, a list of 1 to 5 numbers with values between 1 and 9 is "
                           "provided. These values describe the number of objects in each heap. For the subtraction variation, "
                           "the size of the heap followed the maximum number of objects that can be removed is provided.");
 

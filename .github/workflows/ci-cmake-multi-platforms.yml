@@ -1,0 +1,131 @@
+name: CI build test
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      # Set fail-fast to false to ensure that feedback is delivered for all matrix combinations. Consider changing this to true when your workflow is stable.
+      fail-fast: false
+
+      # Set up a matrix to run the following 3 configurations:
+      # 1. <Windows, Release, latest MSVC compiler toolchain on the default runner image, default generator>
+      # 2. <Linux, Release, latest GCC compiler toolchain on the default runner image, default generator>
+      # 3. <Linux, Release, latest Clang compiler toolchain on the default runner image, default generator>
+      #
+      # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the build_type list.
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        build_type: [Release]
+        c_compiler: [gcc, clang, cl]
+        include:
+          - os: windows-latest
+            c_compiler: cl
+            cpp_compiler: cl
+          - os: ubuntu-latest
+            c_compiler: gcc
+            cpp_compiler: g++
+          - os: ubuntu-latest
+            c_compiler: clang
+            cpp_compiler: clang++
+        exclude:
+          - os: windows-latest
+            c_compiler: gcc
+          - os: windows-latest
+            c_compiler: clang
+          - os: ubuntu-latest
+            c_compiler: cl
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Set reusable strings
+      # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
+      id: strings
+      shell: bash
+      run: |
+        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+        echo "deps-source-dir=${{ github.workspace }}/deps" >> "$GITHUB_OUTPUT"
+        echo "deps-install-dir=${{ github.workspace }}/deps/install" >> "$GITHUB_OUTPUT"
+
+    - name: Install required dependencies
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        find_latest_stable_tag() {
+          local repo_url="$1"
+          git ls-remote --refs --sort="v:refname" --tags "$repo_url" \
+            | awk -F'/' '{print $3}' \
+            | grep -E '^[vV]?[0-9]+(\.[0-9]+)*$' \
+            | tail -n1
+        }
+
+        install_cmake_repo() {
+          local repo="$1"
+          local repo_url="https://github.com/${repo}.git"
+          local name
+          name="$(basename "$repo")"
+          local src_dir="${{ steps.strings.outputs.deps-source-dir }}/${name}"
+          local build_dir="${src_dir}/build"
+
+          local tag
+          tag="$(find_latest_stable_tag "$repo_url")"
+
+          if [ -n "$tag" ]; then
+            echo "Installing ${repo} from stable tag ${tag}"
+            git clone --depth 1 --branch "$tag" "$repo_url" "$src_dir"
+          else
+            echo "No stable tag found for ${repo}; installing from default branch"
+            git clone --depth 1 "$repo_url" "$src_dir"
+          fi
+
+          cmake -S "$src_dir" -B "$build_dir" \
+            -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} \
+            -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -DBUILD_TESTING=OFF \
+            -DJSON_BuildTests=OFF \
+            -DCLI11_BUILD_TESTS=OFF \
+            -DCLI11_BUILD_EXAMPLES=OFF \
+            -DCLI11_BUILD_DOCS=OFF \
+            -DCMAKE_INSTALL_PREFIX="${{ steps.strings.outputs.deps-install-dir }}"
+
+          cmake --build "$build_dir" --config ${{ matrix.build_type }} --target install
+        }
+
+        mkdir -p "${{ steps.strings.outputs.deps-source-dir }}" "${{ steps.strings.outputs.deps-install-dir }}"
+
+        install_cmake_repo "nlohmann/json"
+        install_cmake_repo "CLIUtils/CLI11"
+
+    - name: Configure CMake
+      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+      run: >
+        cmake -B ${{ steps.strings.outputs.build-output-dir }}
+        -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
+        -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
+        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.deps-install-dir }}
+        -S ${{ github.workspace }}
+
+    - name: Build
+      # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
+      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+
+# Just test build for now
+#
+#    - name: Test
+#      working-directory: ${{ steps.strings.outputs.build-output-dir }}
+#      # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
+#      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
+#      run: ctest --build-config ${{ matrix.build_type }}
